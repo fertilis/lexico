@@ -7,7 +7,9 @@ authors = [
     { name = "Egor Kalinin", email = "egorsinbox@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "pydantic>=2.12.5",
+]
 
 [project.scripts]
 dictionary = "dictionary:main"
