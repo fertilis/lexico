@@ -1,0 +1,6 @@
+[submodule "dictionary/lib/gsoc2019-greek-morpho"]
+	path = dictionary/lib/gsoc2019-greek-morpho
+	url = https://github.com/fertilis/gsoc2019-greek-morpho
+[submodule "dictionary/lib/greek-phrases-static"]
+	path = dictionary/lib/greek-phrases-static
+	url = git@github.com:fertilis/greek-phrases-static.git
