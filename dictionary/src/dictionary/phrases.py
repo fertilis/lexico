@@ -18,30 +18,20 @@ def extract_phrases() -> dict[AccentedForm, Phrase]:
     """
     if not phrases_selected_path.exists():
         raise FileNotFoundError(f"Phrases file not found at {phrases_selected_path}")
-
     with open(phrases_selected_path, "r", encoding="utf-8") as f:
         data = json.load(f)
-
     phrases_map: dict[AccentedForm, Phrase] = {}
-
-    # Extract phrases from all partitions
     for partition in data.get("partitions", []):
         for phrase_entry in partition.get("phrases", []):
             word = phrase_entry.get("word")
             if not word:
                 continue
-
-            # Skip if we already have a phrase for this word
             if word in phrases_map:
                 continue
-
             greek_phrase = phrase_entry.get("greek_phrase", "").strip()
             english_phrase = phrase_entry.get("english_phrase", "").strip()
-
             # Remove ** markers used for highlighting
             greek_phrase = re.sub(r"\*\*([^*]+)\*\*", r"\1", greek_phrase)
             english_phrase = re.sub(r"\*\*([^*]+)\*\*", r"\1", english_phrase)
-
             phrases_map[word] = Phrase(greek=greek_phrase, english=english_phrase)
-
     return phrases_map

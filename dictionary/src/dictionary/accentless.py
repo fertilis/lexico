@@ -7,7 +7,7 @@ from pydantic import TypeAdapter
 
 
 @cache_to_file(accentless_cache_path, TypeAdapter(dict[str, list[str]]))
-def create_accentless_database() -> dict[str, list[str]]:
+def create_accentless_form_to_lemmas_mapping() -> dict[str, list[str]]:
     """Create a mapping from accentless words to their lemmas.
 
     Reads from the SQLite database and creates a dictionary mapping accentless

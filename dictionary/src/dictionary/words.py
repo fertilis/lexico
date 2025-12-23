@@ -6,7 +6,6 @@ from dictionary.data_types import Phrase, Word
 from dictionary.orm import word_from_record
 from dictionary.phrases import extract_phrases
 from dictionary.word_ranking import create_word_ranking
-from dictionary.translations import create_translations
 from dictionary.accentless import drop_greek_accents, forms_to_exclude
 from dictionary.utils import cache_to_file
 from pydantic import TypeAdapter
@@ -25,7 +24,7 @@ def create_words() -> list[Word]:
     - Query dict.db for all word forms for these lemmas.
     - Construct Word objects.
     - Add these Word objects to the set.
-    - Enrich Word objects with word ranks (io/word_ranking.json), phrases, and translations.
+    - Enrich Word objects with word ranks (io/word_ranking.json) and phrases.
     - Sort words by key: (whether occuring in keys of phrases.json, rank)
     - Cache output to io/words.json.
     """
@@ -37,8 +36,8 @@ def create_words() -> list[Word]:
     words: set[Word] = _query_words_from_db(all_forms)
     lemmas = {word.lemma for word in words}
     words |= _query_words_by_lemmas(lemmas)
+    words = {w for w in words if _word_filter(w)}
     accentless_form_rank = create_word_ranking()
-    lemma_translations = create_translations()
     enriched_words: set[Word] = set()
     for word in words:
         accentless_form = drop_greek_accents(word.form)
@@ -48,12 +47,10 @@ def create_words() -> list[Word]:
             phrases = []
         else:
             phrases = [phrase]
-        translation = lemma_translations.get(word.lemma, None)
         enriched_word = word.model_copy(
             update={
                 "frequency_rank": frequency_rank,
                 "phrases": phrases,
-                "translation": translation,
             }
         )
         enriched_words.add(enriched_word)
@@ -83,31 +80,34 @@ def _extract_value_forms(phrases_map: dict) -> set[str]:
     return value_forms
 
 
+def _batch_items(items: set[str], batch_size: int = 100) -> list[list[str]]:
+    """Split a set of items into batches of specified size."""
+    items_list = list(items)
+    return [
+        items_list[i : i + batch_size] for i in range(0, len(items_list), batch_size)
+    ]
+
+
 def _query_words_from_db(all_forms: set[str]) -> set[Word]:
     """Query dict.db for given word forms and return dict of (form, lemma) -> Word."""
     if not db_path.exists():
         raise FileNotFoundError(f"Database not found at {db_path}")
-
     db_uri = f"file:{db_path}?mode=ro"
     words: set[Word] = set()
-
     with sqlite3.connect(db_uri, uri=True) as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-
-        # Query for each form
-        placeholders = ",".join("?" * len(all_forms))
-        cursor.execute(
-            f"SELECT * FROM words WHERE form IN ({placeholders}) and {_filter_bad_forms()}",
-            list(all_forms),
-        )
-        for row in cursor.fetchall():
-            record = dict(row)
-            # Skip if pos is missing (required field)
-            if not record.get("pos"):
-                continue
-            word = word_from_record(record)
-            words.add(word)
+        batches = _batch_items(all_forms, batch_size=100)
+        for batch in batches:
+            placeholders = ",".join("?" * len(batch))
+            query = f"SELECT * FROM words WHERE form IN ({placeholders})"
+            cursor.execute(query, batch)
+            for row in cursor.fetchall():
+                record = dict(row)
+                if not record.get("pos"):
+                    continue
+                word = word_from_record(record)
+                words.add(word)
     return words
 
 
@@ -115,30 +115,25 @@ def _query_words_by_lemmas(lemmas: set[str]) -> set[Word]:
     """Query dict.db for all word forms that have the given lemmas."""
     if not db_path.exists():
         raise FileNotFoundError(f"Database not found at {db_path}")
-
     db_uri = f"file:{db_path}?mode=ro"
     words: set[Word] = set()
-
     with sqlite3.connect(db_uri, uri=True) as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-
         if not lemmas:
             return words
-
-        placeholders = ",".join("?" * len(lemmas))
-        cursor.execute(
-            f"SELECT * FROM words WHERE lemma IN ({placeholders}) and {_filter_bad_forms()}",
-            list(lemmas),
-        )
-
-        for row in cursor.fetchall():
-            record = dict(row)
-            # Skip if pos is missing (required field)
-            if not record.get("pos"):
-                continue
-            word = word_from_record(record)
-            words.add(word)
+        batches = _batch_items(lemmas, batch_size=100)
+        for batch in batches:
+            placeholders = ",".join("?" * len(batch))
+            cursor.execute(
+                f"SELECT * FROM words WHERE lemma IN ({placeholders})", batch
+            )
+            for row in cursor.fetchall():
+                record = dict(row)
+                if not record.get("pos"):
+                    continue
+                word = word_from_record(record)
+                words.add(word)
     return words
 
 
@@ -150,9 +145,13 @@ def _sort_key(key_forms, w: Word) -> tuple[bool, int]:
     )
 
 
-def _filter_bad_forms() -> str:
-    not_forms = ",".join(f"'{f}'" for f in forms_to_exclude)
-    return f"form not in ({not_forms}) and ptosi != 'ERROR' and number != 'ERROR'"
+def _word_filter(w: Word) -> bool:
+    return (
+        len(w.lemma.split()) == 1
+        and len(w.form.split()) == 1
+        and drop_greek_accents(w.form) not in forms_to_exclude
+        and drop_greek_accents(w.lemma) not in forms_to_exclude
+    )
 
 
 if __name__ == "__main__":

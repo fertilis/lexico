@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import TypeVar
 
@@ -9,11 +10,12 @@ T = TypeVar("T")
 
 def cache_to_file(path: Path, data_type: TypeAdapter[T] | type[BaseModel]):
     """Decorator to cache function results to a JSON file.
-    
+
     Args:
         path: Path to the cache file
         data_type: Either a Pydantic BaseModel class or a TypeAdapter for complex types like lists
     """
+
     def decorator(func):
         def wrapper(*args, **kwargs):
             if path.exists():
@@ -27,6 +29,7 @@ def cache_to_file(path: Path, data_type: TypeAdapter[T] | type[BaseModel]):
                 except (json.JSONDecodeError, IOError, ValueError):
                     pass
             result = func(*args, **kwargs)
+            os.makedirs(path.parent, exist_ok=True)
             with path.open("w", encoding="utf-8") as f:
                 if isinstance(data_type, TypeAdapter):
                     f.write(data_type.dump_json(result, indent=2).decode("utf-8"))

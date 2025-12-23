@@ -8,7 +8,10 @@ Selects random words from the database and shows:
 
 import sqlite3
 
-from dictionary.accentless import create_accentless_database, drop_greek_accents
+from dictionary.accentless import (
+    create_accentless_form_to_lemmas_mapping,
+    drop_greek_accents,
+)
 from dictionary.config import db_path
 
 
@@ -19,7 +22,7 @@ def main():
         return
 
     # Create the accentless database mapping
-    accentless_db = create_accentless_database()
+    accentless_db = create_accentless_form_to_lemmas_mapping()
 
     # Use read-only mode
     db_uri = f"file:{db_path}?mode=ro"

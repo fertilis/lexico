@@ -124,8 +124,8 @@ class Translation(BaseModel):
 class Word(BaseModel):
     form: str
     lemma: str
+    lemma_index: int = -1
     frequency_rank: int | None = None
-    translation: Translation | None = None
     phrases: list[Phrase] = []
     pos_en: PartOfSpeechEnglish
     pos_el: PartOfSpeechGreek | None = None
@@ -140,11 +140,48 @@ class Word(BaseModel):
     verbform: VerbForm | None = None
     voice: Voice | None = None
 
+    _identity_fields = (
+        "form",
+        "lemma",
+        "pos_en",
+        "pos_el",
+        "gender",
+        "ptosi",
+        "number",
+        "degree",
+        "person",
+        "tense",
+        "aspect",
+        "mood",
+        "verbform",
+        "voice",
+    )
+
+    def _identity_tuple(self) -> tuple:
+        return tuple(getattr(self, field) for field in self._identity_fields)
+
     def __eq__(self, other):
-        return self.lemma == other.lemma and self.form == other.form
+        return (
+            isinstance(other, Word)
+            and self._identity_tuple() == other._identity_tuple()
+        )
 
     def __hash__(self):
-        return hash((self.lemma, self.form))
+        return hash(self._identity_tuple())
 
     def __str__(self):
         return f"{self.form} ({self.lemma})"
+
+
+class Lemma(BaseModel):
+    lemma: str
+    pos_en: PartOfSpeechEnglish
+    frequency_rank: int | None = None
+    translation: Translation | None = None
+    word_indices: list[int] = Field(default_factory=list)
+
+
+class Dictionary(BaseModel):
+    lemmas: list[Lemma]
+    words: list[Word]
+    pos_lemma_index: dict[PartOfSpeechEnglish, list[int]]

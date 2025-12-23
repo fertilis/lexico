@@ -1,6 +1,9 @@
 from collections import defaultdict
 
-from dictionary.accentless import create_accentless_database, drop_greek_accents
+from dictionary.accentless import (
+    create_accentless_form_to_lemmas_mapping,
+    drop_greek_accents,
+)
 from dictionary.config import greek_50k_path, lemma_ranking_cache_path
 from dictionary.utils import cache_to_file
 from pydantic import TypeAdapter
@@ -16,7 +19,7 @@ def create_lemma_ranking() -> dict[str, int]:
     """
     if not greek_50k_path.exists():
         raise FileNotFoundError(f"Frequency file not found at {greek_50k_path}")
-    accentless_db = create_accentless_database()
+    accentless_form_lemmas = create_accentless_form_to_lemmas_mapping()
     lemma_ranks: dict[str, int] = defaultdict(int)
     with greek_50k_path.open("r") as f:
         for line in f:
@@ -32,7 +35,7 @@ def create_lemma_ranking() -> dict[str, int]:
             except ValueError:
                 continue
             accentless_form = drop_greek_accents(word_form)
-            lemmas = accentless_db.get(accentless_form, [])
+            lemmas = accentless_form_lemmas.get(accentless_form, [])
             for lemma in lemmas:
                 lemma_ranks[lemma] = max(lemma_ranks[lemma], frequency_rank)
     return lemma_ranks
