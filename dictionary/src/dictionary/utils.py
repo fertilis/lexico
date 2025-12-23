@@ -32,10 +32,14 @@ def cache_to_file(path: Path, data_type: TypeAdapter[T] | type[BaseModel]):
             os.makedirs(path.parent, exist_ok=True)
             with path.open("w", encoding="utf-8") as f:
                 if isinstance(data_type, TypeAdapter):
-                    f.write(data_type.dump_json(result, indent=2).decode("utf-8"))
+                    f.write(
+                        data_type.dump_json(result, indent=2, exclude_none=True).decode(
+                            "utf-8"
+                        )
+                    )
                 else:
                     if isinstance(result, BaseModel):
-                        f.write(result.model_dump_json(indent=2))
+                        f.write(result.model_dump_json(indent=2, exclude_none=True))
                     else:
                         json.dump(result, f, ensure_ascii=False, indent=2)
             return result

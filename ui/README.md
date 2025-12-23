@@ -28,7 +28,7 @@ The user can switch between queues at any time.
 Queues are stored locally (e.g. in browser's local storage).
 
 This application works without a backend. The database is represented by JSON object downloaded at startup and stored locally.
-This database is immutable. Python definitions used to created database JSON object can be found in `entities.py`.
+This database is immutable. Python definitions used to created database JSON object can be found in `dictionary.py`.
 Root object corresponds to `Dictionary' class.
 
 The user can reload database to store locally the latest version.
