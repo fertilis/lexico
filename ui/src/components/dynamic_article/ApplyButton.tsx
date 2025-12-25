@@ -20,10 +20,7 @@ export default function ApplyButton({queueType, rotation, onPress}: ApplyButtonP
   const handleClick = () => {
     Queues.instance.rotate(queueType, rotation);
     dispatch(setCurrentArticle(queueType));
-    const newIndex = Queues.instance.getFront(queueType);
-    if (newIndex !== null) {
-      router.push(`/article/${queueType}/${newIndex}`);
-    }
+    router.push('/article');
     onPress();
   };
 

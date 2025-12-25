@@ -52,10 +52,7 @@ export default function ShiftButton({queueType, shiftType, onShowSlider}: ShiftB
       Queues.instance.backToFront(queueType);
     }
     dispatch(setCurrentArticle(queueType));
-    const newIndex = Queues.instance.getFront(queueType);
-    if (newIndex !== null) {
-      router.push(`/article/${queueType}/${newIndex}`);
-    }
+    router.push('/article');
   };
 
   const getButtonClass = () => {

@@ -43,7 +43,7 @@ export default function Home() {
       hasRouted.current = true;
       if (currentQueueType) {
         if (currentArticleIndex !== null) {
-          router.push(`/article/${currentQueueType}/${currentArticleIndex}`);
+          router.push("/article");
         } else {
           router.push("/menu");
         }

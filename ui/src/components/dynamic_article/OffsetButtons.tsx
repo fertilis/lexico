@@ -18,10 +18,7 @@ export default function OffsetButtons({queueType}: OffsetButtonsProps) {
   const handleOffset = (offset: MoveOffset) => {
     Queues.instance.moveFrontByOffset(queueType, offset);
     dispatch(setCurrentArticle(queueType));
-    const newIndex = Queues.instance.getFront(queueType);
-    if (newIndex !== null) {
-      router.push(`/article/${queueType}/${newIndex}`);
-    }
+    router.push('/article');
   };
 
   return (

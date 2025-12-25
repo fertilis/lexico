@@ -1,6 +1,8 @@
-import type { NextConfig } from "next";
+import type {NextConfig} from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
+  trailingSlash: true,
   // Mark Tauri modules as external packages that should not be bundled
   // These modules are only available in Tauri environment, not in browser
   serverExternalPackages: [
