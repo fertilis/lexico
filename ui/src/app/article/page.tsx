@@ -9,7 +9,7 @@ import { isStateInitialized } from '@/domain/utils';
 export default function ArticlePage() {
   const router = useRouter();
   const queueType = useGetCurrentQueueType();
-  const articleIndex = queueType ? useGetCurrentArticleIndex(queueType) : null;
+  const articleIndex = useGetCurrentArticleIndex(queueType);
 
   useEffect(() => {
     if (!isStateInitialized()) {

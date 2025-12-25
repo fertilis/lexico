@@ -3,6 +3,7 @@ import { Noto_Sans } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 import MenuButton from "@/components/MenuButton";
+import CurrentArticleIndex from "@/components/CurrentArticleIndex";
 
 const notoSans = Noto_Sans({
   subsets: ["latin", "greek"],
@@ -27,6 +28,8 @@ export default function RootLayout({
           <div className="main_box">
             <div className="top_row">
               <MenuButton />
+              <CurrentArticleIndex />
+              <div style={{ width: "40px", flexShrink: 0 }} />
             </div>
             <div className="bottom_row">
               {children}

@@ -49,8 +49,11 @@ export const useGetCurrentQueueType = (): QueueType | null => {
   });
 };
 
-export const useGetCurrentArticleIndex = (queueType: QueueType): CurrentArticleIndex => {
+export const useGetCurrentArticleIndex = (queueType: QueueType | null): CurrentArticleIndex => {
   const map = useSelector((state: RootState) => state.currentArticle.currentArticles);
+  if (queueType === null) {
+    return null;
+  }
   const value = map.get(queueType);
   return value ?? null;
 };
