@@ -2,13 +2,13 @@ import argparse
 import json
 import random
 
-from dictionary.words import create_words
+from dictionary.words import create_words_stage_1
 
 
 def main(n):
     """Select random n words and display as JSON."""
     print(f"Loading words from phrases...")
-    words = create_words()
+    words = create_words_stage_1()
     if not words:
         print("No words found!")
         return

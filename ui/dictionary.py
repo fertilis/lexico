@@ -126,7 +126,6 @@ class Word(BaseModel):
     lemma: str
     lemma_index: int = -1
     frequency_rank: int | None = None
-    phrases: list[Phrase] = []
     pos_en: PartOfSpeechEnglish
     pos_el: PartOfSpeechGreek | None = None
     gender: Gender | None = None
@@ -173,6 +172,15 @@ class Word(BaseModel):
         return f"{self.form} ({self.lemma})"
 
 
+class WordCard(BaseModel):
+    form: str
+    phrases: list[Phrase]
+    word_indices: list[
+        int
+    ]  # one word form may belong to multiple Word or Lemma objects due to part of speech ambiguity
+    lemma_indices: list[int]
+
+
 class Lemma(BaseModel):
     lemma: str
     pos_en: PartOfSpeechEnglish
@@ -185,3 +193,4 @@ class Dictionary(BaseModel):
     lemmas: list[Lemma]
     words: list[Word]
     pos_lemma_index: dict[PartOfSpeechEnglish, list[int]]
+    word_cards: list[WordCard]

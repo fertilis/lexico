@@ -6,7 +6,6 @@ from dictionary.data_types import Lemma, Word
 from dictionary.lemma_ranking import create_lemma_ranking
 from dictionary.translations import create_translations
 from dictionary.utils import cache_to_file
-from dictionary.words import create_words
 
 
 @cache_to_file(lemmas_cache_path, TypeAdapter(list[Lemma]))
@@ -21,7 +20,9 @@ def create_lemmas() -> list[Lemma]:
     - Sort lemmas by frequency rank desc (most frequent first)
     - Cache output to io/lemmas.json.
     """
-    words: list[Word] = create_words()
+    from dictionary.words import create_words_stage_1
+
+    words: list[Word] = create_words_stage_1()
     translations = create_translations()
     lemma_ranking = create_lemma_ranking()
     lemma_groups: dict[tuple, list[int]] = defaultdict(list)

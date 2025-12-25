@@ -1,8 +1,9 @@
 import sqlite3
 import re
 
-from dictionary.config import db_path, words_cache_path
-from dictionary.data_types import Phrase, Word
+from dictionary.config import db_path, slim_words_cache_path, enriched_words_cache_path
+from dictionary.data_types import PartOfSpeechEnglish, Phrase, Word
+from dictionary.lemmas import create_lemmas
 from dictionary.orm import word_from_record
 from dictionary.phrases import extract_phrases
 from dictionary.word_ranking import create_word_ranking
@@ -11,8 +12,24 @@ from dictionary.utils import cache_to_file
 from pydantic import TypeAdapter
 
 
-@cache_to_file(words_cache_path, TypeAdapter(list[Word]))
-def create_words() -> list[Word]:
+@cache_to_file(enriched_words_cache_path, TypeAdapter(list[Word]))
+def create_words_stage_2() -> list[Word]:
+    """Enriches words with lemma index"""
+    words: list[Word] = create_words_stage_1()
+    lemmas = create_lemmas()
+    lemma_index_map: dict[tuple[PartOfSpeechEnglish, str], int] = {}
+    for idx, lemma in enumerate(lemmas):
+        lemma_index_map[(lemma.pos_en, lemma.lemma)] = idx
+    enriched_words: list[Word] = []
+    for word in words:
+        lemma_index = lemma_index_map.get((word.pos_en, word.lemma), -1)
+        enriched_word = word.model_copy(update={"lemma_index": lemma_index})
+        enriched_words.append(enriched_word)
+    return enriched_words
+
+
+@cache_to_file(slim_words_cache_path, TypeAdapter(list[Word]))
+def create_words_stage_1() -> list[Word]:
     """Creates the list of words occuring in phrases.
 
     - Take all word forms used as keys in io/phrases.json
@@ -42,17 +59,7 @@ def create_words() -> list[Word]:
     for word in words:
         accentless_form = drop_greek_accents(word.form)
         frequency_rank: int = accentless_form_rank.get(accentless_form, None)
-        phrase = form_phrase.get(word.form, None)
-        if phrase is None:
-            phrases = []
-        else:
-            phrases = [phrase]
-        enriched_word = word.model_copy(
-            update={
-                "frequency_rank": frequency_rank,
-                "phrases": phrases,
-            }
-        )
+        enriched_word = word.model_copy(update={"frequency_rank": frequency_rank})
         enriched_words.add(enriched_word)
     enriched_words_list = list(enriched_words)
     enriched_words_list.sort(key=sort_key)
@@ -152,7 +159,3 @@ def _word_filter(w: Word) -> bool:
         and drop_greek_accents(w.form) not in forms_to_exclude
         and drop_greek_accents(w.lemma) not in forms_to_exclude
     )
-
-
-if __name__ == "__main__":
-    create_words()

@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+Css class names must be snake_case, not dash-delimeted. It's easier to handle snake_case in IDE.

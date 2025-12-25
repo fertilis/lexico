@@ -116,12 +116,11 @@ export interface Translation {
   ru: string[];
 }
 
-export interface Word {
+export interface StoredWord {
   form: string;
   lemma: string;
   lemma_index: number;
   frequency_rank: number | null;
-  phrases: Phrase[];
   pos_en: PartOfSpeechEnglish;
   pos_el: PartOfSpeechGreek | null;
   gender: Gender | null;
@@ -136,7 +135,7 @@ export interface Word {
   voice: Voice | null;
 }
 
-export interface Lemma {
+export interface StoredLemma {
   lemma: string;
   pos_en: PartOfSpeechEnglish;
   frequency_rank: number | null;
@@ -144,9 +143,17 @@ export interface Lemma {
   word_indices: number[];
 }
 
-export interface Dictionary {
-  lemmas: Lemma[];
-  words: Word[];
+export interface StoredWordCard {
+  form: string;
+  phrases: Phrase[];
+  word_indices: number[]; // one word form may belong to multiple Word or Lemma objects due to part of speech ambiguity
+  lemma_indices: number[];
+}
+
+export interface StoredDictionary {
+  lemmas: StoredLemma[];
+  words: StoredWord[];
   pos_lemma_index: Record<PartOfSpeechEnglish, number[]>;
+  word_cards: StoredWordCard[];
 }
 

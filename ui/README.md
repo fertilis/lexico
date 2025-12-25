@@ -56,11 +56,11 @@ The user can reload database to store locally the latest version.
   + Move by 1000
   + Move to the end
 
-- Menue button
+- Menu button
 
 - Article display area (scrollable)
 
-- Welcome screen
+- Home screen
 
 - Queue screen: queue name, reset button, current position selector
 
@@ -72,28 +72,29 @@ Top row with menu button.
 
 Bottom row with main display area to show:
 
-- welcome screen
+- Home screen
 - menu
 - queue screen
 - article: top row the article itself, bottom row the contextual control panel
 
 ## Behavior
 
-- At launch, check if the database is stored locally.
-  If not, show the welcome screen.
-  If yes, check if current queue is stored.
-  + If not, show the menu.
-  + If yes, display the article.
+- Home page (/):
+  Check if state is initialized:
+  If yes: 
+    Check if current queue is set:
+    If yes: route to /article/{queue_type}/{index} (display current article)
+    If no: route to /menu
+  If no: run useInitializeState(), display "Loading database..." message, after done, go to yes branch
+  
+- Dictionary page (/dictionary):
+  Display some welcome text.
+  Check if state is initialized:
+      If yes: show "Reload database" button and below "Menu" button (yes additional button).
+      In no: show "Load database" button.
+  Pressing button: Message "Loading database..." instead of the button, and then navigating to home page
+  Pressing menu button, routes to /menu.
 
-- Pressing menu button brings in the menu to the main display area. 
-  Pressing again removes the menu and restores previous component.
-  
-- Welcome screen shows some text and single "Load database" button.
-  Pressing the button downloads the database JSON object and stores it locally.
-  Then shows the menu.
-  While downloading, shows a progress indicator.
-  
-- Pressing "Reload database" in the menu, opens welcome screen in "progress" mode.
 
 - Pressing other buttons of the menu:
   + marks selection of the current queue
@@ -109,6 +110,31 @@ Bottom row with main display area to show:
     Changing the selector:
     * sets the next position of the article in the current queue
     * brings in the next article
+  + When on word article, there should be a "Lemma" button on the contextual control panel, pressing it switches to lemma article with "Back" button
+    on the contextual control panel to return to the word article.
+    
+## Routes
+
+/ (Home page)
+
+/menu
+
+/queue/{type}
+
+/word/{index}
+
+/lemma/{index}
+
+## Data structures
+
+Queue can be represented as array of indices. 
+The most frequent operation will be modifying this array (pop from front, insert in the middle).
+Therefore, it makes no sense to store position in the queue separately. 
+Let the front of the queue be always at index 0 (the index stored at index 0 points to the current article).
+After each modification of the queue we will have to store the entire queue array locally anyway.
+
+Selecting current arcticle next position: pop + insert.
+Selecting initial position: cut in 2 parts, append left part to the end of right part.
 
 ## Development
 
@@ -116,3 +142,35 @@ Bottom row with main display area to show:
 npm run dev
 ```
 
+## Domain objects
+
+```mermaid
+classDiagram
+    class Dictionary {
+        -stored: StoredDictionary
+        +init(): Promise~void~
+        +getWord(index: number): Word
+        +getLemma(index: number): Lemma
+        +getWords(indices: number[]): Word[]
+        +getInitialQueue(type: QueueType): number[]
+    }
+    
+    class Word {
+        -stored: StoredWord
+        -dictionary: Dictionary
+        +getLemma(): Lemma
+        +get stored(): StoredWord
+    }
+    
+    class Lemma {
+        -stored: StoredLemma
+        -dictionary: Dictionary
+        +getWords(): Word[]
+        +get stored(): StoredLemma
+    }
+    
+    Dictionary --> Word : creates
+    Dictionary --> Lemma : creates
+    Word --> Lemma : getLemma()
+    Lemma --> Word : getWords()
+```

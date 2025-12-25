@@ -9,7 +9,6 @@ from dictionary.data_types import (
     Person,
     Ptosi,
     Tense,
-    Translation,
     VerbForm,
     Voice,
     Word,
@@ -51,7 +50,6 @@ def word_from_record(record: dict) -> Word:
     return Word(
         form=record["form"],
         lemma=record["lemma"],
-        phrases=[],  # Not in words table, enriched later
         pos_en=pos_en,
         pos_el=pos_el,
         gender=gender,
