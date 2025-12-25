@@ -1,7 +1,7 @@
 "use client";
 
 import {Lemma, WordCard} from "@/domain/Dictionary";
-import styles from "../Common.module.css";
+import styles from "@/components/Common.module.css";
 
 interface GrammarBlockProps {
   wordCard: WordCard;

@@ -1,6 +1,6 @@
 "use client";
 
-import commonStyles from '../Common.module.css';
+import commonStyles from '@/components/Common.module.css';
 import styles from './DynamicArticle.module.css';
 
 interface MoreButtonProps {

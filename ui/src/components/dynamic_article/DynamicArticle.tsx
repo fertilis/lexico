@@ -3,11 +3,11 @@
 import {useEffect, useState} from 'react';
 import {Dictionary, WordCard} from '@/domain/Dictionary';
 import {QueueType} from '@/domain/Queues';
-import WordArticle from '../word_article/WordArticle';
+import WordArticle from '@/components/word_article/WordArticle';
 import ShiftButton, {ShiftType} from './ShiftButton';
 import QueueSlider from './QueueSlider';
 import ContextualControls from './ContextualControls';
-import commonStyles from '../Common.module.css';
+import commonStyles from '@/components/Common.module.css';
 import styles from './DynamicArticle.module.css';
 import {getMaxStage} from './utils';
 

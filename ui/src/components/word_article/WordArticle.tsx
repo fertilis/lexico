@@ -2,7 +2,7 @@
 
 import {WordCard} from "@/domain/Dictionary";
 import {Phrase, StoredWordCard} from "@/domain/StoredDictionary";
-import styles from "../Common.module.css";
+import styles from "@/components/Common.module.css";
 import {WordArticleDisplayStage} from "./WordArticleDisplayStage";
 import WordFormBlock from "./WordFormBlock";
 import PhraseBlock from "./PhraseBlock";

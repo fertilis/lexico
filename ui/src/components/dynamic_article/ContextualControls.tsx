@@ -1,7 +1,7 @@
 "use client";
 
 import {QueueType} from '@/domain/Queues';
-import {WordArticleDisplayStage} from '../word_article/WordArticleDisplayStage';
+import {WordArticleDisplayStage} from '@/components/word_article/WordArticleDisplayStage';
 import ApplyButton from './ApplyButton';
 import MoreButton from './MoreButton';
 import OffsetButtons from './OffsetButtons';

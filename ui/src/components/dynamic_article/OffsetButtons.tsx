@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import {useRouter} from 'next/navigation';
 import {QueueType, Queues, MoveOffset} from '@/domain/Queues';
 import {setCurrentArticle} from '@/redux_state/currentArticleSlice';
-import commonStyles from '../Common.module.css';
+import commonStyles from '@/components/Common.module.css';
 import styles from './DynamicArticle.module.css';
 
 interface OffsetButtonsProps {
