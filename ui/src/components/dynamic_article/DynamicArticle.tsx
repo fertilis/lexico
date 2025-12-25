@@ -4,7 +4,6 @@ import {useEffect, useState} from 'react';
 import {Dictionary, WordCard} from '@/domain/Dictionary';
 import {QueueType} from '@/domain/Queues';
 import WordArticle from '../word_article/WordArticle';
-import {WordArticleDisplayStage} from '../word_article/WordArticleDisplayStage';
 import ShiftButton, {ShiftType} from './ShiftButton';
 import QueueSlider from './QueueSlider';
 import ContextualControls from './ContextualControls';
@@ -26,16 +25,10 @@ export default function DynamicArticle({queueType, currentArticleIndex}: Dynamic
   const queueTypeEnum = queueType as QueueType;
   const maxStage = getMaxStage(queueTypeEnum);
 
+  // Reset displayStage to 0 whenever navigation occurs (currentArticleIndex changes)
   useEffect(() => {
-    switch (queueTypeEnum) {
-      case QueueType.WordsCards:
-        setDisplayStage(WordArticleDisplayStage.WordForm);
-        break;
-      default:
-        setDisplayStage(0);
-        break;
-    }
-  }, [queueTypeEnum]);
+    setDisplayStage(0);
+  }, [currentArticleIndex]);
 
   let wordCard: WordCard | null = null;
   if (queueType === QueueType.WordsCards) {
