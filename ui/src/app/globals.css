@@ -62,11 +62,12 @@ html {
 /* Top row with menu button */
 .top_row {
   width: 100%;
-  height: var(--top-row-height);
+  height: calc(var(--top-row-height) + env(safe-area-inset-top, 0));
   flex-shrink: 0;
   display: flex;
   align-items: center;
   padding: 0 16px;
+  padding-top: env(safe-area-inset-top, 0);
   border-bottom: 2px solid var(--border-color);
 }
 

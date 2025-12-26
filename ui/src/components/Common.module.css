@@ -75,7 +75,6 @@
 }
 
 .highlighted_text {
-  font-weight: bold;
   color: var(--highlighted-text-color);
 }
 
