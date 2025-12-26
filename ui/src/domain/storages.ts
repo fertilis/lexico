@@ -20,7 +20,8 @@ export function isSupportedPlatform(): boolean {
   return typeof window !== "undefined" || isTauri();
 }
 
-export function createBlobStorage(): BlobStorage {
+export async function createBlobStorage(): Promise<BlobStorage> {
+  await initializeTauriCheck();
   if (isTauri()) {
     return new FileBlobStorage();
   } else {
@@ -28,7 +29,8 @@ export function createBlobStorage(): BlobStorage {
   }
 }
 
-export function createKvStorage(): KvStorage {
+export async function createKvStorage(): Promise<KvStorage> {
+  await initializeTauriCheck();
   if (isTauri()) {
     return new TauriKvStorage();
   } else {

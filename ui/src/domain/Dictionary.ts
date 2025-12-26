@@ -96,12 +96,11 @@ export class WordCard {
  */
 export class Dictionary {
   private static _instance: Dictionary | null = null;
+  private static storeLocally: boolean = false;
   private stored: StoredDictionary | null = null;
-  private storage: BlobStorage;
+  private storage: BlobStorage | null = null;
 
-  private constructor() {
-    this.storage = createBlobStorage();
-  }
+  private constructor() {}
 
   static get instance(): Dictionary {
     if (!Dictionary._instance) {
@@ -111,12 +110,30 @@ export class Dictionary {
   }
 
   async init(): Promise<void> {
-    const storedData = await this.loadDictionary();
-    if (storedData) {
-      this.stored = storedData;
-      return;
+    if (Dictionary.storeLocally) {
+      if (!this.storage) {
+        this.storage = await createBlobStorage();
+      }
+      const storedData = await this.loadDictionary();
+      if (storedData) {
+        this.stored = storedData;
+        return;
+      }
+      await this.reinit();
+    } else {
+      if (!isSupportedPlatform()) {
+        throw new Error("Cannot download dictionary on server side");
+      }
+      try {
+        const compressedData = await this.fetchDictionary();
+        this.stored = this.decompressAndParse(compressedData);
+      } catch (error) {
+        console.error("Failed to download and load dictionary:", error);
+        throw new Error(
+          `Failed to initialize dictionary: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
     }
-    await this.reinit();
   }
 
   async reinit(): Promise<void> {
@@ -125,10 +142,18 @@ export class Dictionary {
     }
     try {
       const compressedData = await this.fetchDictionary();
-      await this.storage.save(compressedData);
-      const storedData = await this.loadDictionary();
-      if (storedData) {
-        this.stored = storedData;
+      if (Dictionary.storeLocally) {
+        if (!this.storage) {
+          this.storage = await createBlobStorage();
+        }
+        await this.storage.save(compressedData);
+        const storedData = await this.loadDictionary();
+        if (storedData) {
+          this.stored = storedData;
+        }
+      } else {
+        // When not storing locally, parse directly
+        this.stored = this.decompressAndParse(compressedData);
       }
     } catch (error) {
       console.error("Failed to download and load dictionary:", error);
@@ -139,24 +164,34 @@ export class Dictionary {
   }
 
   private async loadDictionary(): Promise<StoredDictionary | null> {
+    if (!Dictionary.storeLocally) {
+      return null; // Storage not used when storeLocally is false
+    }
     if (!isSupportedPlatform()) {
       return null; // Server-side rendering
+    }
+    if (!this.storage) {
+      throw new Error("Storage not initialized");
     }
     try {
       const compressedData = await this.storage.load();
       if (!compressedData) {
         return null;
       }
-      const decompressedData = pako.inflate(new Uint8Array(compressedData), {
-        to: "string",
-      });
-      const parsed = JSON.parse(decompressedData) as StoredDictionary;
-      this.validateDictionary(parsed);
-      return parsed;
+      return this.decompressAndParse(compressedData);
     } catch (error) {
       console.error("Failed to load dictionary from storage:", error);
       return null;
     }
+  }
+
+  private decompressAndParse(compressedData: ArrayBuffer): StoredDictionary {
+    const decompressedData = pako.inflate(new Uint8Array(compressedData), {
+      to: "string",
+    });
+    const parsed = JSON.parse(decompressedData) as StoredDictionary;
+    this.validateDictionary(parsed);
+    return parsed;
   }
 
   private async fetchDictionary(): Promise<ArrayBuffer> {

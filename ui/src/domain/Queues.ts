@@ -23,12 +23,11 @@ export enum MoveOffset {
 
 export class Queues {
   private static _instance: Queues | null = null;
-  private storage: KvStorage;
+  private storage: KvStorage | null = null;
   private queues: Map<QueueType, number[] | null>;
   private currentQueueType: QueueType | null | undefined = undefined;
 
   private constructor() {
-    this.storage = createKvStorage();
     this.queues = new Map<QueueType, number[] | null>();
     for (const queueType of Object.values(QueueType)) {
       this.queues.set(queueType, null);
@@ -55,6 +54,9 @@ export class Queues {
   }
 
   async init(): Promise<void> {
+    if (!this.storage) {
+      this.storage = await createKvStorage();
+    }
     for (const queueType of Object.values(QueueType)) {
       const storageKey = getStorageKey(queueType);
       const storedIndices = await this.storage.load<number[]>(storageKey);
@@ -77,7 +79,9 @@ export class Queues {
       this.queues.set(queueType, indices);
     }
     this.currentQueueType = null;
-    this.storage.save(getCurrentQueueTypeStorageKey(), null);
+    if (this.storage) {
+      this.storage.save(getCurrentQueueTypeStorageKey(), null);
+    }
   }
 
   getFront(queueType: QueueType): number | null {
@@ -105,7 +109,9 @@ export class Queues {
       const k = ((n % len) + len) % len;
       indices.unshift(...indices.splice(len - k));
       this.queues.set(queueType, indices);
-      this.storage.save(getStorageKey(queueType), indices);
+      if (this.storage) {
+        this.storage.save(getStorageKey(queueType), indices);
+      }
     }
   }
 
@@ -160,7 +166,9 @@ export class Queues {
 
   setCurrentQueueType(queueType: QueueType | null): void {
     this.currentQueueType = queueType;
-    this.storage.save(getCurrentQueueTypeStorageKey(), queueType);
+    if (this.storage) {
+      this.storage.save(getCurrentQueueTypeStorageKey(), queueType);
+    }
   }
 
 }
