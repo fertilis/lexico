@@ -4,6 +4,8 @@ const DICTIONARY_KEY = "compressed_data";
 const DICTIONARY_FILE_PATH = "dictionary.json.gz";
 const DB_VERSION = 1;
 
+let tauriCheckCache: boolean | null = null;
+
 export interface BlobStorage {
   load(): Promise<ArrayBuffer | null>;
   save(data: ArrayBuffer): Promise<void>;
@@ -224,7 +226,34 @@ export class TauriKvStorage implements KvStorage {
   }
 }
 
+export async function initializeTauriCheck(): Promise<void> {
+  if (tauriCheckCache !== null) {
+    return;
+  }
+  
+  if (typeof window === "undefined") {
+    tauriCheckCache = false;
+    return;
+  }
+
+  try {
+    const importFn = new Function("specifier", "return import(specifier)");
+    const core = await importFn("@tauri-apps/api/core");
+    tauriCheckCache = await core.isTauri();
+  } catch (error) {
+    tauriCheckCache = "__TAURI__" in window;
+  }
+}
+
+export function isTauriInitialized(): boolean {
+  return tauriCheckCache !== null;
+}
+
 function isTauri(): boolean {
+  if (tauriCheckCache !== null) {
+    return tauriCheckCache;
+  }
+  
   return typeof window !== "undefined" && "__TAURI__" in window;
 }
 
