@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Sans } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
@@ -14,6 +14,12 @@ const notoSans = Noto_Sans({
 export const metadata: Metadata = {
   title: "Lexico",
   description: "Interactive Greek dictionary",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
