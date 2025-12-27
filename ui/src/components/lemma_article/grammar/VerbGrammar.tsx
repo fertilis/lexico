@@ -101,9 +101,12 @@ function ConjugationTable({lemma, tense, voice}: ConjugationTableProps) {
   const formItems = persons.flatMap((person) => {
     return numbers.map((number) => {
       const form = getWordForCell(person, number);
+      const displayForm = tense === DisplayTense.Future && form !== "-" 
+        ? `θα ${form}` 
+        : form;
       return {
         key: `${person}-${number}`,
-        form,
+        form: displayForm,
       };
     });
   });
