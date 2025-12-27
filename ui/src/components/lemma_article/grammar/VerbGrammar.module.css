@@ -1,0 +1,75 @@
+.verb_grammar {
+  width: 100%;
+}
+
+.voice_section {
+  margin-bottom: 24px;
+}
+
+.voice_section:last-of-type {
+  margin-bottom: 0;
+}
+
+.voice_heading {
+  padding-bottom: 12px;
+  font-weight: 600;
+}
+
+.tense_section {
+  margin-bottom: 16px;
+}
+
+.tense_section:last-child {
+  margin-bottom: 0;
+}
+
+.tense_heading {
+  padding: 0 0 8px 0;
+}
+
+.conjugation_table {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 300px) {
+  .conjugation_table {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, 1fr);
+  }
+}
+
+.conjugation_table > * {
+  min-width: 0;
+}
+
+.imperative_section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+}
+
+.imperative_heading {
+  padding-bottom: 8px;
+}
+
+.imperative_forms {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 300px) {
+  .imperative_forms {
+    grid-template-columns: 1fr;
+  }
+}
+
+.imperative_forms > * {
+  min-width: 0;
+}
+
