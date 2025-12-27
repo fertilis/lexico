@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useGetCurrentQueueType, useGetCurrentArticleIndex, setCurrentQueueType, setCurrentArticleIndex } from '@/redux_state/currentArticleSlice';
 import { useDispatch } from 'react-redux';
@@ -8,7 +8,7 @@ import DynamicArticle from '@/components/dynamic_article/DynamicArticle';
 import { isStateInitialized } from '@/domain/utils';
 import { QueueType } from '@/domain/Queues';
 
-export default function ArticlePage() {
+function ArticlePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
@@ -74,5 +74,13 @@ export default function ArticlePage() {
   }
 
   return <DynamicArticle queueType={queueType} currentArticleIndex={articleIndex} />;
+}
+
+export default function ArticlePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ArticlePageContent />
+    </Suspense>
+  );
 }
 

@@ -1,9 +1,10 @@
 "use client";
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import LemmaPreview from '@/components/lemma_preview/LemmaPreview';
 
-export default function LemmaPreviewPage() {
+function LemmaPreviewContent() {
   const searchParams = useSearchParams();
   
   const lemmaArticleIndexParam = searchParams.get('lemmaArticleIndex');
@@ -22,6 +23,14 @@ export default function LemmaPreviewPage() {
       lemmaArticleIndex={lemmaArticleIndex} 
       referrerPathAndQuery={referrerPathAndQuery}
     />
+  );
+}
+
+export default function LemmaPreviewPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LemmaPreviewContent />
+    </Suspense>
   );
 }
 
