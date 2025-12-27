@@ -33,6 +33,10 @@ const currentArticleSlice = createSlice({
         state.currentArticles.set(queueType, Queues.instance.getFront(queueType));
       }
     },
+    setCurrentArticleIndex: (state, action: PayloadAction<{queueType: QueueType, articleIndex: number}>) => {
+      const {queueType, articleIndex} = action.payload;
+      state.currentArticles.set(queueType, articleIndex);
+    },
   },
 });
 
@@ -40,6 +44,7 @@ export const {
   setCurrentQueueType,
   setCurrentArticle,
   setAllCurrentArticles,
+  setCurrentArticleIndex,
 } = currentArticleSlice.actions;
 
 
