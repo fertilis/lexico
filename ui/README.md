@@ -11,7 +11,7 @@ as well as one or many use examples (short sentences with English translation).
 
 Different parts of the article are displayed sequencially as the user presses the "Next" button.
 
-For lemma articles, such parts are: lemma, translation, use examples, all word forms with grammatical information.
+For lemma articles, such parts are: lemma, translation, all word forms with grammatical information.
 
 For word articles, such parts are: word form, grammatical information, use example.
 

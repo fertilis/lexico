@@ -55,8 +55,7 @@
 }
 
 .article_block {
-  padding-top: 16px;
-  padding-bottom: 16px;
+  padding: 10px 0;
 }
 
 .article_controls {
@@ -78,3 +77,13 @@
   color: var(--highlighted-text-color);
 }
 
+.pos {
+  color: #87ceeb;
+  font-style: italic;
+  font-size: var(--font-size-default);
+}
+
+.article_header {
+  font-size: 1.2em;
+  color: var(--highlighted-text-color);
+}

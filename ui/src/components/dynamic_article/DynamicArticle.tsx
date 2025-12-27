@@ -1,9 +1,10 @@
 "use client";
 
 import {useEffect, useState} from 'react';
-import {Dictionary, WordCard} from '@/domain/Dictionary';
+import {Dictionary, WordCard, Lemma} from '@/domain/Dictionary';
 import {QueueType} from '@/domain/Queues';
 import WordArticle from '@/components/word_article/WordArticle';
+import LemmaArticle from '@/components/lemma_article/LemmaArticle';
 import ShiftButton, {ShiftType} from './ShiftButton';
 import QueueSlider from './QueueSlider';
 import ContextualControls from './ContextualControls';
@@ -31,11 +32,18 @@ export default function DynamicArticle({queueType, currentArticleIndex}: Dynamic
   }, [currentArticleIndex]);
 
   let wordCard: WordCard | null = null;
+  let lemma: Lemma | null = null;
   if (queueType === QueueType.WordsCards) {
     try {
       wordCard = Dictionary.instance.getWordCard(currentArticleIndex);
     } catch (error) {
       console.error('Failed to get word:', error);
+    }
+  } else {
+    try {
+      lemma = Dictionary.instance.getLemma(currentArticleIndex);
+    } catch (error) {
+      console.error('Failed to get lemma:', error);
     }
   }
 
@@ -72,6 +80,8 @@ export default function DynamicArticle({queueType, currentArticleIndex}: Dynamic
         <div className={styles.article_area}>
           {queueType === QueueType.WordsCards && wordCard ? (
             <WordArticle wordCard={wordCard} displayStage={displayStage} />
+          ) : lemma ? (
+            <LemmaArticle lemma={lemma} displayStage={displayStage} />
           ) : (
             <div className={commonStyles.article_block}>
               <p>Stub: Type: {queueType}, Index: {currentArticleIndex}</p>

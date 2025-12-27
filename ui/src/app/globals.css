@@ -6,7 +6,10 @@
   --highlighted-text-color: #fff9c4;
   --max-width: 600px;
   --max-height: 900px;
-  --top-row-height: 60px;
+  --top-row-height: 50px;
+  --font-size-default: 0.8em;
+  --font-size-small: 0.9em; /*relative to default font size*/
+  --font-size-button: 1.0em; /*relative to default font size*/
 }
 
 html,
@@ -23,6 +26,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: 'Noto Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: var(--font-size-default);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: flex;
@@ -87,8 +91,6 @@ html {
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
-  font-family: inherit;
 }
 
 .menu_button:hover {

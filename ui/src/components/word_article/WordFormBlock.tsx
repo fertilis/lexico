@@ -1,7 +1,6 @@
 "use client";
 
-import styles from "@/components/Common.module.css";
-import articleStyles from "./WordArticle.module.css";
+import commonStyles from "@/components/Common.module.css";
 
 interface WordFormBlockProps {
   wordForm: string;
@@ -9,7 +8,7 @@ interface WordFormBlockProps {
 
 export default function WordFormBlock({wordForm: form}: WordFormBlockProps) {
   return (
-    <div className={`${styles.article_block} ${articleStyles.word_form_block} `}>
+    <div className={`${commonStyles.article_block} ${commonStyles.article_header}`}>
       {form}
     </div>
   );
