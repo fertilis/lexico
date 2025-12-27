@@ -51,7 +51,8 @@ export type Annotation =
   | Aspect
   | Mood
   | Voice
-  | Degree;
+  | Degree
+  | undefined;
 
 const DICTIONARY_URL = "/dictionary.json.gz";
 
@@ -86,24 +87,48 @@ export class Lemma {
     );
   }
 
-  getWord(annotations: Annotation[]): Word | null {
+  getWord(annotations: {[key: string]: Annotation}): Word | null {
     const words = this.getWords();
     for (const word of words) {
       const stored = word.stored;
       let matches = true;
 
-      for (const annotation of annotations) {
-        // Check if the annotation matches any of the word's annotation fields
-        const annotationMatches =
-          stored.gender === annotation ||
-          stored.ptosi === annotation ||
-          stored.number === annotation ||
-          stored.person === annotation ||
-          stored.tense === annotation ||
-          stored.aspect === annotation ||
-          stored.mood === annotation ||
-          stored.voice === annotation ||
-          stored.degree === annotation;
+      for (const [key, annotation] of Object.entries(annotations)) {
+        // Check if the annotation matches the specific field indicated by the key
+        let annotationMatches = false;
+
+        switch (key) {
+          case "gender":
+            annotationMatches = stored.gender === annotation;
+            break;
+          case "ptosi":
+            annotationMatches = stored.ptosi === annotation;
+            break;
+          case "number":
+            annotationMatches = stored.number === annotation;
+            break;
+          case "person":
+            annotationMatches = stored.person === annotation;
+            break;
+          case "tense":
+            annotationMatches = stored.tense === annotation;
+            break;
+          case "aspect":
+            annotationMatches = stored.aspect === annotation;
+            break;
+          case "mood":
+            annotationMatches = stored.mood === annotation;
+            break;
+          case "voice":
+            annotationMatches = stored.voice === annotation;
+            break;
+          case "degree":
+            annotationMatches = stored.degree === annotation;
+            break;
+          default:
+            // Unknown key, skip this annotation
+            continue;
+        }
 
         if (!annotationMatches) {
           matches = false;
@@ -117,6 +142,14 @@ export class Lemma {
     }
 
     return null;
+  }
+
+  hasTranslation(): boolean {
+    const translation = this._storedData.translation;
+    if (translation === null) {
+      return false;
+    }
+    return translation.en.length > 0 || translation.ru.length > 0;
   }
 }
 

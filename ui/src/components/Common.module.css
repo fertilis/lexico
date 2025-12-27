@@ -77,10 +77,9 @@
   color: var(--highlighted-text-color);
 }
 
-.pos {
+.annotation {
   color: #87ceeb;
   font-style: italic;
-  font-size: var(--font-size-default);
 }
 
 .article_header {

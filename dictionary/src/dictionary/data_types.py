@@ -138,6 +138,7 @@ class Word(BaseModel):
     mood: Mood | None = None
     verbform: VerbForm | None = None
     voice: Voice | None = None
+    tags: str | None = None
 
     _identity_fields = (
         "form",

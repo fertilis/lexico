@@ -21,8 +21,8 @@ export default function NounGrammar({lemma}: NounGrammarProps) {
   const ptoi = [Ptosi.Nom, Ptosi.Gen, Ptosi.Acc];
 
   const formItems = ptoi.flatMap((ptosi) => {
-    const singAnnotations: Annotation[] = [gender, ptosi, Number_.Sing];
-    const plurAnnotations: Annotation[] = [gender, ptosi, Number_.Plur];
+    const singAnnotations = {gender, ptosi, number: Number_.Sing};
+    const plurAnnotations = {gender, ptosi, number: Number_.Plur};
     const singWord = lemma.getWord(singAnnotations);
     const plurWord = lemma.getWord(plurAnnotations);
     const singArticle = getDefiniteArticle(gender, ptosi, Number_.Sing);

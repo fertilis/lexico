@@ -10,7 +10,7 @@ interface LemmaBlockProps {
 export default function LemmaBlock({lemma, pos}: LemmaBlockProps) {
   return (
     <div className={`${commonStyles.article_block} ${commonStyles.article_header}`}>
-      {lemma}, <span className={commonStyles.pos}>{pos.toLowerCase()}</span>
+      {lemma}, <span className={commonStyles.annotation}>{pos.toLowerCase()}</span>
     </div>
   );
 }

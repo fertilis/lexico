@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import Sequence
 from pydantic import TypeAdapter
 
 from dictionary.config import lemmas_cache_path
@@ -43,6 +44,18 @@ def create_lemmas() -> list[Lemma]:
             translation=translation,
             word_indices=word_indices,
         )
-        lemmas.append(lemma_obj)
+        if _lemma_filter(lemma_obj, words):
+            lemmas.append(lemma_obj)
     lemmas.sort(key=lambda x: -x.frequency_rank)
     return lemmas
+
+
+def _lemma_filter(x: Lemma, words: Sequence[Word]) -> bool:
+    is_incomplete = False
+    if len(x.word_indices) == 1:
+        word = words[x.word_indices[0]]
+        if "Incomplete" in (word.tags or ""):
+            is_incomplete = True
+    return (
+        x.translation and (x.translation.en or x.translation.ru) and not is_incomplete
+    )

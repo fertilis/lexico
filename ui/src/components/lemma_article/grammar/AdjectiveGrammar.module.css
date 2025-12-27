@@ -1,0 +1,25 @@
+.adjective_forms {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 300px) {
+  .adjective_forms {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adjective_forms > * {
+  min-width: 0;
+}
+
+.adjective_grammar > div + div .gender_label {
+  padding-top: 16px;
+}
+
+.gender_label {
+  padding: 0 0 8px 0;
+}
+

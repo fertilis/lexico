@@ -46,6 +46,7 @@ def word_from_record(record: dict) -> Word:
     mood = Mood(record["mood"]) if _clean(record.get("mood")) else None
     verbform = VerbForm(record["verbform"]) if _clean(record.get("verbform")) else None
     voice = Voice(record["voice"]) if _clean(record.get("voice")) else None
+    tags = record["tags"] if _clean(record.get("tags")) else None
 
     return Word(
         form=record["form"],
@@ -62,4 +63,5 @@ def word_from_record(record: dict) -> Word:
         mood=mood,
         verbform=verbform,
         voice=voice,
+        tags=tags,
     )
