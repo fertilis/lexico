@@ -25,6 +25,15 @@ import {
   StoredLemma,
   StoredWordCard,
   PartOfSpeechEnglish,
+  Gender,
+  Ptosi,
+  Number_,
+  Person,
+  Tense,
+  Aspect,
+  Mood,
+  Voice,
+  Degree,
 } from "./StoredDictionary";
 import {QueueType} from "./Queues";
 import {
@@ -32,6 +41,17 @@ import {
   createBlobStorage,
   isSupportedPlatform,
 } from "./storages";
+
+export type Annotation =
+  | Gender
+  | Ptosi
+  | Number_
+  | Person
+  | Tense
+  | Aspect
+  | Mood
+  | Voice
+  | Degree;
 
 const DICTIONARY_URL = "/dictionary.json.gz";
 
@@ -64,6 +84,39 @@ export class Lemma {
     return this._storedData.word_indices.map((index) =>
       this.dictionary.getWord(index)
     );
+  }
+
+  getWord(annotations: Annotation[]): Word | null {
+    const words = this.getWords();
+    for (const word of words) {
+      const stored = word.stored;
+      let matches = true;
+
+      for (const annotation of annotations) {
+        // Check if the annotation matches any of the word's annotation fields
+        const annotationMatches =
+          stored.gender === annotation ||
+          stored.ptosi === annotation ||
+          stored.number === annotation ||
+          stored.person === annotation ||
+          stored.tense === annotation ||
+          stored.aspect === annotation ||
+          stored.mood === annotation ||
+          stored.voice === annotation ||
+          stored.degree === annotation;
+
+        if (!annotationMatches) {
+          matches = false;
+          break;
+        }
+      }
+
+      if (matches) {
+        return word;
+      }
+    }
+
+    return null;
   }
 }
 

@@ -1,0 +1,17 @@
+.noun_forms {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 300px) {
+  .noun_forms {
+    grid-template-columns: 1fr;
+  }
+}
+
+.noun_forms > * {
+  min-width: 0;
+}
+

@@ -61,7 +61,7 @@ export enum Ptosi {
   ERROR = "ERROR",
 }
 
-export enum Number {
+export enum Number_ {
   Sing = "Sing",
   Plur = "Plur",
   ERROR = "ERROR",
@@ -125,7 +125,7 @@ export interface StoredWord {
   pos_el: PartOfSpeechGreek | null;
   gender: Gender | null;
   ptosi: Ptosi | null;
-  number: Number | null;
+  number: Number_ | null;
   degree: Degree | null;
   person: Person | null;
   tense: Tense | null;
