@@ -7,7 +7,6 @@ interface PronounGrammarProps {
 }
 
 export default function PronounGrammar({lemma}: PronounGrammarProps) {
-  const wordCount = lemma.stored.word_indices.length;
-  return <div>Word count: {wordCount}</div>;
+  return null;
 }
 
