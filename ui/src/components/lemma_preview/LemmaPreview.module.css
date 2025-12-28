@@ -51,7 +51,7 @@
   height: 100%;
   background: var(--background);
   border: none;
-  padding: 10px 0;
+  padding: 25px 0;
   font-size: var(--font-size-button);
   font-family: inherit;
 }

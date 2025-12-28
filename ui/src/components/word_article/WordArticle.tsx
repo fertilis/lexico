@@ -2,7 +2,8 @@
 
 import {WordCard, Dictionary} from "@/domain/Dictionary";
 import {Phrase, StoredWordCard} from "@/domain/StoredDictionary";
-import styles from "@/components/Common.module.css";
+import commonStyles from "@/components/Common.module.css";
+import styles from "./WordArticle.module.css";
 import {WordArticleDisplayStage} from "./WordArticleDisplayStage";
 import WordFormBlock from "./WordFormBlock";
 import PhraseBlock from "./PhraseBlock";
@@ -30,7 +31,7 @@ export default function WordArticle({wordCard, displayStage}: WordArticleProps) 
   const lemmaIndices = storedWordCard.lemma_indices;
 
   return (
-    <div className={styles.article_container}>
+    <div className={`${commonStyles.article_container} ${styles.word_article}`}>
       {displayStage >= WordArticleDisplayStage.WordForm && (
         <WordFormBlock wordForm={storedWordCard.form} />
       )}
@@ -41,7 +42,7 @@ export default function WordArticle({wordCard, displayStage}: WordArticleProps) 
         <PhraseBlock phrase={phrase.english} language="english" wordForm={storedWordCard.form} />
       )}
       {displayStage >= WordArticleDisplayStage.EnglishPhrase && lemmas.length > 0 && (
-        <div className={styles.article_block}>
+        <div className={commonStyles.article_block}>
           {lemmas.map((lemma, index) => (
             <LemmaLink
               key={lemmaIndices[index]}

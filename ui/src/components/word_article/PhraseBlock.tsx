@@ -11,7 +11,7 @@ interface PhraseBlockProps {
 
 export default function PhraseBlock({phrase, language, wordForm}: PhraseBlockProps) {
   return (
-    <div className={styles.article_block}>
+    <div className={`${styles.article_block} ${styles.left_aligned}`}>
       <div>{language === "greek" ? highlightWord(phrase, wordForm) : phrase}</div>
     </div>
   );

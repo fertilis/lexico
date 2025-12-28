@@ -77,6 +77,10 @@
   color: var(--highlighted-text-color);
 }
 
+.left_aligned {
+  align-self: flex-start;
+}
+
 .annotation {
   color: #87ceeb;
   font-style: italic;
