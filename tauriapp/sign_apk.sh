@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+VERSION=$1
+
 SCRIPT_DIR="$(cd "$(realpath $(dirname "${BASH_SOURCE[0]}"))" && pwd)"
 DIST_DIR=$SCRIPT_DIR/dist
 
@@ -15,5 +17,5 @@ apksigner sign \
   --ks "$ANDROID_KEYSTORE_PATH" \
   --ks-key-alias "$ANDROID_KEY_ALIAS" \
   --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
-  --out $DIST_DIR/lexico.apk \
+  --out $DIST_DIR/lexico-$VERSION.apk \
   $SCRIPT_DIR/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
