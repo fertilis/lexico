@@ -15,21 +15,22 @@ import {getMaxStage} from './utils';
 interface DynamicArticleProps {
   queueType: string;
   currentArticleIndex: number;
+  displayStageMax?: boolean;
 }
 
-export default function DynamicArticle({queueType, currentArticleIndex}: DynamicArticleProps) {
-  const [displayStage, setDisplayStage] = useState(0);
+export default function DynamicArticle({queueType, currentArticleIndex, displayStageMax = false}: DynamicArticleProps) {
+  const queueTypeEnum = queueType as QueueType;
+  const maxStage = getMaxStage(queueTypeEnum);
+  
+  const [displayStage, setDisplayStage] = useState(displayStageMax ? maxStage : 0);
   const [queueSliderVisible, setQueueSliderVisible] = useState(false);
   const [queueSliderDirection, setQueueSliderDirection] = useState<'forward' | 'backward'>('forward');
   const [queueSliderRotation, setQueueSliderRotation] = useState(0);
 
-  const queueTypeEnum = queueType as QueueType;
-  const maxStage = getMaxStage(queueTypeEnum);
-
-  // Reset displayStage to 0 whenever navigation occurs (currentArticleIndex changes)
+  // Reset displayStage whenever navigation occurs (currentArticleIndex changes)
   useEffect(() => {
-    setDisplayStage(0);
-  }, [currentArticleIndex]);
+    setDisplayStage(displayStageMax ? maxStage : 0);
+  }, [currentArticleIndex, displayStageMax, maxStage]);
 
   let wordCard: WordCard | null = null;
   let lemma: Lemma | null = null;

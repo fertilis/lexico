@@ -1,24 +1,25 @@
 "use client";
 
-import { Suspense, useEffect, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useGetCurrentQueueType, useGetCurrentArticleIndex, setCurrentQueueType, setCurrentArticleIndex } from '@/redux_state/currentArticleSlice';
-import { useDispatch } from 'react-redux';
+import {Suspense, useEffect, useMemo} from 'react';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {useGetCurrentQueueType, useGetCurrentArticleIndex, setCurrentQueueType, setCurrentArticleIndex} from '@/redux_state/currentArticleSlice';
+import {useDispatch} from 'react-redux';
 import DynamicArticle from '@/components/dynamic_article/DynamicArticle';
-import { isStateInitialized } from '@/domain/utils';
-import { QueueType } from '@/domain/Queues';
+import {isStateInitialized} from '@/domain/utils';
+import {QueueType} from '@/domain/Queues';
 
 function ArticlePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
-  
+
   const reduxQueueType = useGetCurrentQueueType();
   const reduxArticleIndex = useGetCurrentArticleIndex(reduxQueueType);
 
   // Parse query params
   const queryQueueType = searchParams.get('queueType');
   const queryArticleIndex = searchParams.get('articleIndex');
+  const queryDisplayStageMax = searchParams.get('displayStageMax');
 
   // Determine which values to use: query params take precedence if provided
   const queueType = useMemo(() => {
@@ -41,6 +42,13 @@ function ArticlePageContent() {
     }
     return reduxArticleIndex;
   }, [queryArticleIndex, reduxArticleIndex]);
+
+  const displayStageMax = useMemo(() => {
+    if (queryDisplayStageMax !== null) {
+      return queryDisplayStageMax === 'true' || queryDisplayStageMax === '1';
+    }
+    return false;
+  }, [queryDisplayStageMax]);
 
   // Update Redux state if query params are provided
   useEffect(() => {
@@ -73,7 +81,7 @@ function ArticlePageContent() {
     return null;
   }
 
-  return <DynamicArticle queueType={queueType} currentArticleIndex={articleIndex} />;
+  return <DynamicArticle queueType={queueType} currentArticleIndex={articleIndex} displayStageMax={displayStageMax} />;
 }
 
 export default function ArticlePage() {

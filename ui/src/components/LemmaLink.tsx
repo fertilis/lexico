@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
-import { Lemma } from '@/domain/Dictionary';
-import { QueueType } from '@/domain/Queues';
+import {useRouter} from 'next/navigation';
+import {Lemma} from '@/domain/Dictionary';
+import {QueueType} from '@/domain/Queues';
 import commonStyles from '@/components/Common.module.css';
 import styles from './LemmaLink.module.css';
 
@@ -13,11 +13,11 @@ interface LemmaLinkProps {
   lemmaIndex: number;
 }
 
-export default function LemmaLink({ 
-  referrerQueueType, 
-  referrerArticleIndex, 
+export default function LemmaLink({
+  referrerQueueType,
+  referrerArticleIndex,
   lemma,
-  lemmaIndex 
+  lemmaIndex
 }: LemmaLinkProps) {
   const router = useRouter();
 
@@ -26,6 +26,7 @@ export default function LemmaLink({
     const referrerSearchParams = new URLSearchParams();
     referrerSearchParams.set('queueType', referrerQueueType);
     referrerSearchParams.set('articleIndex', referrerArticleIndex.toString());
+    referrerSearchParams.set('displayStageMax', "1");
     const referrerPathAndQuery = `/article?${referrerSearchParams.toString()}`;
 
     // Navigate to lemma preview
