@@ -7,7 +7,7 @@ import commonStyles from "./Common.module.css";
 export default function MenuButton() {
   const pathname = usePathname();
   const router = useRouter();
-  const isMenuOpen = pathname === "/menu";
+  const isMenuOpen = pathname.startsWith("/menu");
 
   const handleClick = () => {
     if (isMenuOpen) {

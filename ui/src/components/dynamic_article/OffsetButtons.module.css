@@ -1,0 +1,64 @@
+.offset_buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+}
+
+.offset_button {
+  padding: 10px 20px;
+  font-size: var(--font-size-button);
+  font-family: inherit;
+  background: var(--background);
+  border: none;
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.offset_button:nth-child(4n) {
+  border-right: none;
+}
+
+.offset_button:nth-last-child(-n+4) {
+  border-bottom: none;
+}
+
+@media (max-width: 600px) {
+  .offset_buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .offset_button:nth-child(4n) {
+    border-right: 1px solid var(--border-color);
+  }
+
+  .offset_button:nth-child(2n) {
+    border-right: none;
+  }
+
+  .offset_button:nth-last-child(-n+4) {
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .offset_button:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .offset_buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .offset_button {
+    border-right: none;
+  }
+
+  .offset_button:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .offset_button:last-child {
+    border-bottom: none;
+  }
+}
+

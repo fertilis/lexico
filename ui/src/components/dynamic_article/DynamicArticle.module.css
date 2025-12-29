@@ -117,30 +117,4 @@
   font-family: inherit;
 }
 
-.offset_buttons {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 5px;
-  width: 100%;
-}
-
-.offset_buttons button {
-  flex: 1 1 calc(25% - 12px);
-  min-width: 0;
-}
-
-@media (max-width: 600px) {
-  .offset_buttons button {
-    flex: 1 1 calc(50% - 8px);
-    min-width: calc(50% - 8px);
-  }
-}
-
-@media (max-width: 400px) {
-  .offset_buttons button {
-    flex: 1 1 100%;
-    min-width: 100%;
-  }
-}
 

@@ -1,7 +1,8 @@
 "use client";
 
 import {Lemma} from "@/domain/Dictionary";
-import styles from "@/components/Common.module.css";
+import commonStyles from "@/components/Common.module.css";
+import styles from "./LemmaArticle.module.css";
 import {LemmaArticleDisplayStage} from "./LemmaArticleDisplayStage";
 import LemmaBlock from "./LemmaBlock";
 import TranslationBlock from "./TranslationBlock";
@@ -16,7 +17,7 @@ export default function LemmaArticle({lemma, displayStage}: LemmaArticleProps) {
   const storedLemma = lemma.stored;
 
   return (
-    <div className={styles.article_container}>
+    <div className={`${commonStyles.article_container} ${styles.lemma_article}`}>
       {displayStage >= LemmaArticleDisplayStage.Lemma && (
         <LemmaBlock lemma={storedLemma.lemma} pos={storedLemma.pos_en} />
       )}
