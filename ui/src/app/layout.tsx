@@ -4,6 +4,7 @@ import "./globals.css";
 import StoreProvider from "./StoreProvider";
 import MenuButton from "@/components/MenuButton";
 import CurrentArticleIndex from "@/components/CurrentArticleIndex";
+import ThemeButton from "@/components/ThemeButton";
 
 const notoSans = Noto_Sans({
   subsets: ["latin", "greek"],
@@ -28,14 +29,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="light_theme">
       <body className={notoSans.variable}>
         <StoreProvider>
           <div className="main_box">
             <div className="top_row">
               <MenuButton />
-              <CurrentArticleIndex />
-              <div style={{ width: "40px", flexShrink: 0 }} />
+              <div className="top_row_center">
+                <CurrentArticleIndex />
+              </div>
+              <ThemeButton />
             </div>
             <div className="bottom_row">
               {children}

@@ -12,7 +12,7 @@ export default function CurrentArticleIndex() {
     return null;
   }
   return (
-    <div style={{textAlign: "center", flex: 1}}>
+    <div style={{textAlign: "center"}}>
       {articleIndex}
     </div>
   );

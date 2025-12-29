@@ -23,6 +23,7 @@
   display: block;
   width: 24px;
   height: 24px;
+  color: var(--icon-color);
 }
 
 .message {
@@ -88,11 +89,11 @@
 }
 
 .annotation {
-  color: #87ceeb;
+  color: var(--annotation-color);
   font-style: italic;
 }
 
 .article_header {
-  font-size: 1.2em;
+  font-size: var(--font-size-big);
   color: var(--highlighted-text-color);
 }
