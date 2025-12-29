@@ -9,7 +9,13 @@
   transition: background-color 0.2s;
 }
 
-.button:hover {
+@media (hover: hover) {
+  .button:hover {
+    background: var(--button-hover-color);
+  }
+}
+
+.button:active {
   background: var(--button-hover-color);
 }
 
