@@ -99,22 +99,13 @@
 }
 
 .contextual_button {
-  padding: 10px 20px;
-  font-size: var(--font-size-button);
-  font-family: inherit;
-  border-radius: 4px;
-  background: var(--background);
-  border: 1px solid var(--border-color);
-}
-
-.more_button {
   width: 100%;
   height: 100%;
   background: var(--background);
   border: none;
   padding: 25px 0;
-  font-size: var(--font-size-button);
   font-family: inherit;
+  font-size: var(--font-size-button);
 }
 
 

@@ -11,7 +11,7 @@ export default function MoreButton({onIncrement}: MoreButtonProps) {
   return (
     <button
       onClick={onIncrement}
-      className={`${commonStyles.button} ${styles.more_button}`}
+      className={`${commonStyles.button} ${styles.contextual_button}`}
     >
       More
     </button>
