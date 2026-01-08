@@ -138,6 +138,9 @@ export class Queues {
       case MoveOffset.Pop:
         indices.splice(0, 1);
         this.queues.set(queueType, indices);
+        if (this.storage) {
+          this.storage.save(getStorageKey(queueType), indices);
+        }
         return;
       default:
         return;
@@ -145,6 +148,9 @@ export class Queues {
     indices.splice(0, 1);
     indices.splice(newPosition, 0, frontIndex);
     this.queues.set(queueType, indices);
+    if (this.storage) {
+      this.storage.save(getStorageKey(queueType), indices);
+    }
   }
 
   calculateFrontAfterRotation(queueType: QueueType, rotation: number): number | null {
