@@ -1,6 +1,6 @@
 # Tauri App for Lexico
 
-Setup
+## Setup
 
 ```bash
 ➞  cargo create-tauri-app                                                                                                                                                                           [git:master] ✔ 
@@ -23,4 +23,18 @@ npm run tauri android init
 npm run tauri icon src-tauri/icons/android-chrome-512x512.png
 
 bash create_sign_key.sh 
+```
+
+## Android images
+
+
+```bash
+# List available system images
+sdkmanager --list | grep "system-images" 
+
+# Create an AVD with the desired system image
+avdmanager create avd  -n tauri_pixel -k "system-images;android-34;google_apis;x86_64"
+
+# Run emulator
+emulator -avd tauri_pixel 
 ```
