@@ -39,7 +39,7 @@ export default function WordArticle({wordCard, displayStage}: WordArticleProps) 
         <PhraseBlock phrase={phrase.greek} language="greek" wordForm={storedWordCard.form} />
       )}
       {displayStage >= WordArticleDisplayStage.EnglishPhrase && phrase && (
-        <PhraseBlock phrase={phrase.english} language="english" wordForm={storedWordCard.form} />
+        <PhraseBlock phrase={phrase.english} language="english" />
       )}
       {displayStage >= WordArticleDisplayStage.EnglishPhrase && lemmas.length > 0 && (
         <div className={commonStyles.article_block}>

@@ -6,13 +6,18 @@ import styles from "@/components/Common.module.css";
 interface PhraseBlockProps {
   phrase: string;
   language: "greek" | "english";
-  wordForm: string;
+  /** When set, highlights this substring in Greek phrases (word cards). */
+  wordForm?: string;
 }
 
 export default function PhraseBlock({phrase, language, wordForm}: PhraseBlockProps) {
+  const body =
+    language === "greek" && wordForm
+      ? highlightWord(phrase, wordForm)
+      : phrase;
   return (
     <div className={`${styles.article_block} ${styles.left_aligned}`}>
-      <div>{language === "greek" ? highlightWord(phrase, wordForm) : phrase}</div>
+      <div>{body}</div>
     </div>
   );
 }

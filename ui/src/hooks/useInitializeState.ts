@@ -1,6 +1,7 @@
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "@/redux_state/store";
 import {Dictionary} from "@/domain/Dictionary";
+import {Phrases} from "@/domain/Phrases";
 import {Queues} from "@/domain/Queues";
 import {isStateInitialized} from "@/domain/utils";
 import {setAllCurrentArticles, setCurrentQueueType} from "@/redux_state/currentArticleSlice";
@@ -14,6 +15,7 @@ export function useInitializeState() {
     }
     await initializeTauriCheck();
     await Dictionary.instance.init();
+    await Phrases.instance.init();
     await Queues.instance.init();
     dispatch(setAllCurrentArticles());
     const loadedQueueType = Queues.instance.getCurrentQueueType();
@@ -26,6 +28,7 @@ export function useReinitializeState() {
 
   return async () => {
     await Dictionary.instance.reinit();
+    await Phrases.instance.init();
     Queues.instance.reinit();
     dispatch(setAllCurrentArticles());
     dispatch(setCurrentQueueType(null));

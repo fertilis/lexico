@@ -15,6 +15,7 @@ export default function MenuPage() {
   const menuItems = [
     {label: "Dictionary", href: "/dictionary", queueType: null},
     {label: "Words", queueType: QueueType.WordsCards},
+    {label: "Phrases", queueType: QueueType.Phrases},
     {label: "Lemmas", queueType: QueueType.Lemmas},
     {label: "Verbs", queueType: QueueType.Verbs},
     {label: "Nouns", queueType: QueueType.Nouns},

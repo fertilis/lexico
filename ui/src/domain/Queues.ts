@@ -1,8 +1,10 @@
 import {createKvStorage, KvStorage} from "./storages";
 import {Dictionary} from "./Dictionary";
+import {Phrases} from "./Phrases";
 
 export enum QueueType {
   WordsCards = "words",
+  Phrases = "phrases",
   Lemmas = "lemmas",
   Verbs = "verbs",
   Nouns = "nouns",
@@ -60,7 +62,16 @@ export class Queues {
     for (const queueType of Object.values(QueueType)) {
       const storageKey = getStorageKey(queueType);
       const storedIndices = await this.storage.load<number[]>(storageKey);
-      if (storedIndices && storedIndices.length > 0) {
+      if (queueType === QueueType.Phrases) {
+        const reconciled = reconcilePhraseQueueIndices(
+          storedIndices,
+          Phrases.instance.getLength()
+        );
+        this.queues.set(queueType, reconciled);
+        if (!indicesEqual(storedIndices, reconciled)) {
+          await this.storage.save(storageKey, reconciled);
+        }
+      } else if (storedIndices && storedIndices.length > 0) {
         this.queues.set(queueType, storedIndices);
       } else {
         const indices = Dictionary.instance.getInitialQueue(queueType);
@@ -185,4 +196,51 @@ function getStorageKey(queueType: QueueType): string {
 
 function getCurrentQueueTypeStorageKey(): string {
   return `queue:currentQueueType`;
+}
+
+/** Drop invalid indices when the list shrinks; append any missing indices when it grows (e.g. new phrases published). */
+function reconcilePhraseQueueIndices(
+  stored: number[] | null | undefined,
+  phraseCount: number
+): number[] {
+  if (phraseCount <= 0) {
+    return [];
+  }
+  const seen = new Set<number>();
+  const valid: number[] = [];
+  if (stored) {
+    for (const i of stored) {
+      if (
+        typeof i === "number" &&
+        i >= 0 &&
+        i < phraseCount &&
+        !seen.has(i)
+      ) {
+        seen.add(i);
+        valid.push(i);
+      }
+    }
+  }
+  const missing: number[] = [];
+  for (let i = 0; i < phraseCount; i++) {
+    if (!seen.has(i)) {
+      missing.push(i);
+    }
+  }
+  return [...valid, ...missing];
+}
+
+function indicesEqual(
+  a: number[] | null | undefined,
+  b: number[]
+): boolean {
+  if (!a || a.length !== b.length) {
+    return false;
+  }
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+  return true;
 }

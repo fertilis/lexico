@@ -1,7 +1,6 @@
 "use client";
 
 import {QueueType} from '@/domain/Queues';
-import {WordArticleDisplayStage} from '@/components/word_article/WordArticleDisplayStage';
 import ApplyButton from './ApplyButton';
 import MoreButton from './MoreButton';
 import OffsetButtons from './OffsetButtons';
@@ -10,7 +9,7 @@ import {getMaxStage} from './utils';
 
 interface ContextualControlsProps {
   queueType: QueueType;
-  displayStage: WordArticleDisplayStage;
+  displayStage: number;
   queueSliderVisible: boolean;
   queueSliderRotation: number;
   onIncrementDisplayStage: () => void;

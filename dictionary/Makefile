@@ -1,8 +1,14 @@
 SHELL := /bin/bash
 
-.PHONY: all clean create_words
+.PHONY: all clean create_words sentence_phrases io/output/phrases-current.txt
 
 all: create_dictionary
+
+sentence_phrases: io/output/phrases-current.txt
+
+io/output/phrases-current.txt: | io/output
+	@echo "Building sentence phrases artifact..."
+	@uv run python -m dictionary.sentence_phrases
 
 create_dictionary: clean io/output/dictionary.json.gz
 	

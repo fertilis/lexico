@@ -9,6 +9,8 @@ output_directory = io_dir / "output"
 phrases_dir = io_dir / "phrases"
 phrases_selected_path = phrases_dir / "phrases-selected.json"
 greek_50k_path = phrases_dir / "greek-50k.txt"
+# Bilingual sentence pairs (Greek line, English line, blank line between entries)
+sentence_pairs_source_path = phrases_dir / "sentence-pairs.txt"
 
 # Cache file paths
 enriched_words_cache_path = output_directory / "enriched_words.json"

@@ -2,9 +2,12 @@
 
 import {useEffect, useState} from 'react';
 import {Dictionary, WordCard, Lemma} from '@/domain/Dictionary';
+import {Phrases} from '@/domain/Phrases';
+import type {Phrase} from '@/domain/StoredDictionary';
 import {QueueType} from '@/domain/Queues';
 import WordArticle from '@/components/word_article/WordArticle';
 import LemmaArticle from '@/components/lemma_article/LemmaArticle';
+import PhraseSentenceArticle from '@/components/phrase_article/PhraseSentenceArticle';
 import ShiftButton, {ShiftType} from './ShiftButton';
 import QueueSlider from './QueueSlider';
 import ContextualControls from './ContextualControls';
@@ -21,7 +24,7 @@ interface DynamicArticleProps {
 export default function DynamicArticle({queueType, currentArticleIndex, displayStageMax = false}: DynamicArticleProps) {
   const queueTypeEnum = queueType as QueueType;
   const maxStage = getMaxStage(queueTypeEnum);
-  
+
   const [displayStage, setDisplayStage] = useState(displayStageMax ? maxStage : 0);
   const [queueSliderVisible, setQueueSliderVisible] = useState(false);
   const [queueSliderDirection, setQueueSliderDirection] = useState<'forward' | 'backward'>('forward');
@@ -34,11 +37,18 @@ export default function DynamicArticle({queueType, currentArticleIndex, displayS
 
   let wordCard: WordCard | null = null;
   let lemma: Lemma | null = null;
+  let phrase: Phrase | null = null;
   if (queueType === QueueType.WordsCards) {
     try {
       wordCard = Dictionary.instance.getWordCard(currentArticleIndex);
     } catch (error) {
       console.error('Failed to get word:', error);
+    }
+  } else if (queueType === QueueType.Phrases) {
+    try {
+      phrase = Phrases.instance.getPhrase(currentArticleIndex);
+    } catch (error) {
+      console.error('Failed to get phrase:', error);
     }
   } else {
     try {
@@ -81,6 +91,8 @@ export default function DynamicArticle({queueType, currentArticleIndex, displayS
         <div className={styles.article_area}>
           {queueType === QueueType.WordsCards && wordCard ? (
             <WordArticle wordCard={wordCard} displayStage={displayStage} />
+          ) : queueType === QueueType.Phrases && phrase ? (
+            <PhraseSentenceArticle phrase={phrase} displayStage={displayStage} />
           ) : lemma ? (
             <LemmaArticle lemma={lemma} displayStage={displayStage} />
           ) : (

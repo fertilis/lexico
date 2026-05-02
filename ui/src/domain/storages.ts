@@ -2,7 +2,31 @@ const DICTIONARY_DB_NAME = "dictionary_db";
 const DICTIONARY_STORE_NAME = "dictionary";
 const DICTIONARY_KEY = "compressed_data";
 const DICTIONARY_FILE_PATH = "dictionary.json.gz";
+const PHRASES_INDEXEDDB_KEY = "phrases_artifact_gzip";
+const PHRASES_FILE_PATH = "phrases-artifact.json.gz";
 const DB_VERSION = 1;
+
+function openLexicoIndexedDb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    if (typeof window === "undefined" || !window.indexedDB) {
+      reject(new Error("IndexedDB not available"));
+      return;
+    }
+    const request = indexedDB.open(DICTIONARY_DB_NAME, DB_VERSION);
+    request.onerror = () => {
+      reject(new Error(`Failed to open database: ${request.error}`));
+    };
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      if (!db.objectStoreNames.contains(DICTIONARY_STORE_NAME)) {
+        db.createObjectStore(DICTIONARY_STORE_NAME);
+      }
+    };
+  });
+}
 
 let tauriCheckCache: boolean | null = null;
 
@@ -29,6 +53,14 @@ export async function createBlobStorage(): Promise<BlobStorage> {
   }
 }
 
+export async function createPhrasesBlobStorage(): Promise<BlobStorage> {
+  await initializeTauriCheck();
+  if (isTauri()) {
+    return new FilePhrasesBlobStorage();
+  }
+  return new IndexedDbPhrasesBlobStorage();
+}
+
 export async function createKvStorage(): Promise<KvStorage> {
   await initializeTauriCheck();
   if (isTauri()) {
@@ -44,7 +76,7 @@ export class IndexedDbBlobStorage implements BlobStorage {
       return null;
     }
     try {
-      const db = await this.openDatabase();
+      const db = await openLexicoIndexedDb();
       const compressedData = await new Promise<ArrayBuffer | null>(
         (resolve, reject) => {
           const transaction = db.transaction([DICTIONARY_STORE_NAME], "readonly");
@@ -69,7 +101,7 @@ export class IndexedDbBlobStorage implements BlobStorage {
     if (typeof window === "undefined" || !window.indexedDB) {
       throw new Error("IndexedDB not available");
     }
-    const db = await this.openDatabase();
+    const db = await openLexicoIndexedDb();
     await new Promise<void>((resolve, reject) => {
       const transaction = db.transaction([DICTIONARY_STORE_NAME], "readwrite");
       const store = transaction.objectStore(DICTIONARY_STORE_NAME);
@@ -82,25 +114,46 @@ export class IndexedDbBlobStorage implements BlobStorage {
       };
     });
   }
+}
 
-  private openDatabase(): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-      if (typeof window === "undefined" || !window.indexedDB) {
-        reject(new Error("IndexedDB not available"));
-        return;
-      }
-      const request = indexedDB.open(DICTIONARY_DB_NAME, DB_VERSION);
+export class IndexedDbPhrasesBlobStorage implements BlobStorage {
+  async load(): Promise<ArrayBuffer | null> {
+    if (typeof window === "undefined" || !window.indexedDB) {
+      return null;
+    }
+    try {
+      const db = await openLexicoIndexedDb();
+      return await new Promise<ArrayBuffer | null>((resolve, reject) => {
+        const transaction = db.transaction([DICTIONARY_STORE_NAME], "readonly");
+        const store = transaction.objectStore(DICTIONARY_STORE_NAME);
+        const request = store.get(PHRASES_INDEXEDDB_KEY);
+        request.onerror = () => {
+          reject(new Error(`Failed to read phrases from IndexedDB: ${request.error}`));
+        };
+        request.onsuccess = () => {
+          resolve(request.result || null);
+        };
+      });
+    } catch (error) {
+      console.error("Failed to load phrases from IndexedDB:", error);
+      return null;
+    }
+  }
+
+  async save(data: ArrayBuffer): Promise<void> {
+    if (typeof window === "undefined" || !window.indexedDB) {
+      throw new Error("IndexedDB not available");
+    }
+    const db = await openLexicoIndexedDb();
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction([DICTIONARY_STORE_NAME], "readwrite");
+      const store = transaction.objectStore(DICTIONARY_STORE_NAME);
+      const request = store.put(data, PHRASES_INDEXEDDB_KEY);
       request.onerror = () => {
-        reject(new Error(`Failed to open database: ${request.error}`));
+        reject(new Error(`Failed to store phrases in IndexedDB: ${request.error}`));
       };
       request.onsuccess = () => {
-        resolve(request.result);
-      };
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains(DICTIONARY_STORE_NAME)) {
-          db.createObjectStore(DICTIONARY_STORE_NAME);
-        }
+        resolve();
       };
     });
   }
@@ -137,6 +190,40 @@ export class FileBlobStorage implements BlobStorage {
     } catch (error) {
       throw new Error(
         `Failed to save dictionary to file: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+}
+
+export class FilePhrasesBlobStorage implements BlobStorage {
+  async load(): Promise<ArrayBuffer | null> {
+    if (!isTauri()) {
+      return null;
+    }
+    try {
+      const {readBinaryFile, BaseDirectory} = await importTauriFs();
+      const data = await readBinaryFile(PHRASES_FILE_PATH, {
+        dir: BaseDirectory.AppLocalData,
+      });
+      return data.buffer;
+    } catch (error) {
+      console.error("Failed to load phrases from file:", error);
+      return null;
+    }
+  }
+
+  async save(data: ArrayBuffer): Promise<void> {
+    if (!isTauri()) {
+      throw new Error("File storage not available outside Tauri");
+    }
+    try {
+      const {writeBinaryFile, BaseDirectory} = await importTauriFs();
+      await writeBinaryFile(PHRASES_FILE_PATH, new Uint8Array(data), {
+        dir: BaseDirectory.AppLocalData,
+      });
+    } catch (error) {
+      throw new Error(
+        `Failed to save phrases to file: ${error instanceof Error ? error.message : String(error)}`
       );
     }
   }

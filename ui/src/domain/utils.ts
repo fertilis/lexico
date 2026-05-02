@@ -1,4 +1,5 @@
 import {Dictionary} from "./Dictionary";
+import {Phrases} from "./Phrases";
 import {Queues} from "./Queues";
 import {isTauriInitialized} from "./storages";
 
@@ -7,6 +8,9 @@ export function isStateInitialized(): boolean {
     return false;
   }
   if (!Dictionary.instance.isInitialized()) {
+    return false;
+  }
+  if (!Phrases.instance.isInitialized()) {
     return false;
   }
   if (!Queues.instance.isInitialized()) {

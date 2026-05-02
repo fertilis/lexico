@@ -36,6 +36,7 @@ import {
   Degree,
 } from "./StoredDictionary";
 import {QueueType} from "./Queues";
+import {Phrases} from "./Phrases";
 import {
   BlobStorage,
   createBlobStorage,
@@ -369,6 +370,10 @@ export class Dictionary {
     switch (queueType) {
       case QueueType.WordsCards: {
         return Array.from({length: stored.word_cards.length}, (_, i) => i);
+      }
+
+      case QueueType.Phrases: {
+        return Phrases.instance.getInitialIndices();
       }
 
       case QueueType.Lemmas: {
