@@ -8,7 +8,7 @@
 # With a path: copy only to that directory (no git). Run `make sentence_phrases` in dictionary/ first.
 
 set -euo pipefail
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname $(realpath "${BASH_SOURCE[0]}"))/.." && pwd)"
 SRC="${REPO_ROOT}/dictionary/io/output"
 REMOTE_URL="${LEXICO_PHRASES_REMOTE:-git@github.com:fertilis/lexico-phrases.git}"
 # Served at {pages-root}/phrases/ — matches spec PHRASES_BASE_URL examples.
