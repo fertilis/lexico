@@ -12,8 +12,37 @@ from dictionary.config import output_directory, sentence_pairs_source_path
 from dictionary.data_types import Phrase
 
 
+def _count_greek_letters(s: str) -> int:
+    """Count letters in Greek and Coptic + Greek Extended Unicode blocks."""
+    n = 0
+    for c in s:
+        o = ord(c)
+        if 0x0370 <= o <= 0x03FF or 0x1F00 <= o <= 0x1FFF:
+            n += 1
+    return n
+
+
+def _count_latin_letters(s: str) -> int:
+    return sum(1 for c in s if "A" <= c <= "Z" or "a" <= c <= "z")
+
+
+def _assign_greek_english_pair(line_a: str, line_b: str) -> tuple[str, str]:
+    """Pick Greek vs English by which line has more Greek letters; tie-break with Latin counts."""
+    ga, gb = _count_greek_letters(line_a), _count_greek_letters(line_b)
+    if ga > gb:
+        return line_a, line_b
+    if gb > ga:
+        return line_b, line_a
+    la, lb = _count_latin_letters(line_a), _count_latin_letters(line_b)
+    if la > lb:
+        return line_b, line_a
+    if lb > la:
+        return line_a, line_b
+    return line_a, line_b
+
+
 def parse_bilingual_sentence_file(text: str) -> list[Phrase]:
-    """Split on blank lines; each block: first non-empty line = Greek, second = English."""
+    """Split on blank lines; each block is two non-empty lines (Greek + English, any order)."""
     text = text.strip()
     if not text:
         return []
@@ -23,7 +52,8 @@ def parse_bilingual_sentence_file(text: str) -> list[Phrase]:
         lines = [ln.strip() for ln in block.splitlines() if ln.strip()]
         if len(lines) < 2:
             continue
-        result.append(Phrase(greek=lines[0], english=lines[1]))
+        greek, english = _assign_greek_english_pair(lines[0], lines[1])
+        result.append(Phrase(greek=greek, english=english))
     return result
 
 
