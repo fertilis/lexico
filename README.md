@@ -28,3 +28,20 @@ make build_apk
 ```
 
 Find .apk file in `tauriapp/dist/` directory.
+
+
+## Phrase articles
+
+Phrase articles are stored independently of static articles.
+
+To update them 
+
+1. change `dictionary/io/phrases/sentence-pairs.txt`
+
+2. run
+
+```bash
+scripts/publish-phrases.sh
+```
+
+In about 30 seconds restart the app.
