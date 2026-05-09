@@ -5,7 +5,6 @@ from __future__ import annotations
 import gzip
 import hashlib
 import json
-import re
 from pathlib import Path
 
 from dictionary.config import output_directory, sentence_pairs_source_path
@@ -42,17 +41,24 @@ def _assign_greek_english_pair(line_a: str, line_b: str) -> tuple[str, str]:
 
 
 def parse_bilingual_sentence_file(text: str) -> list[Phrase]:
-    """Split on blank lines; each block is two non-empty lines (Greek + English, any order)."""
-    text = text.strip()
-    if not text:
-        return []
-    blocks = re.split(r"\n\s*\n", text)
+    """Blocks are runs of non-empty lines (after trim); runs are separated by blank lines."""
+    lines = [ln.strip() for ln in text.splitlines()]
+    blocks: list[list[str]] = []
+    cur: list[str] = []
+    for line in lines:
+        if line:
+            cur.append(line)
+        elif cur:
+            blocks.append(cur)
+            cur = []
+    if cur:
+        blocks.append(cur)
+
     result: list[Phrase] = []
-    for block in blocks:
-        lines = [ln.strip() for ln in block.splitlines() if ln.strip()]
-        if len(lines) < 2:
+    for block_lines in blocks:
+        if len(block_lines) < 2:
             continue
-        greek, english = _assign_greek_english_pair(lines[0], lines[1])
+        greek, english = _assign_greek_english_pair(block_lines[0], block_lines[1])
         result.append(Phrase(greek=greek, english=english))
     return result
 
